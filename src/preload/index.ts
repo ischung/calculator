@@ -8,6 +8,6 @@ if (process.contextIsolated) {
     console.error(error)
   }
 } else {
-  // @ts-ignore
+  // @ts-ignore (context isolation disabled — renderer process only)
   window.electron = electronAPI
 }
