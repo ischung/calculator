@@ -14,21 +14,16 @@ mac:
   target:
     - target: dmg
       arch: [x64, arm64]
-  icon: build/icon.icns
   category: public.app-category.utilities
 
 win:
   target:
     - target: nsis
       arch: [x64]
-  icon: build/icon.ico
 
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
-  installerIcon: build/icon.ico
-  uninstallerIcon: build/icon.ico
-  installerHeaderIcon: build/icon.ico
   createDesktopShortcut: true
   createStartMenuShortcut: true
 
