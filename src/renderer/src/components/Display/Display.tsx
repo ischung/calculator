@@ -1,9 +1,8 @@
+import type { CalculatorState } from '../../../../types/calculator'
 import styles from './Display.module.css'
 
 interface DisplayProps {
-  expression: string
-  displayValue: string
-  isError: boolean
+  state: CalculatorState
 }
 
 function getFontSize(length: number): string {
@@ -12,7 +11,8 @@ function getFontSize(length: number): string {
   return '28px'
 }
 
-function Display({ expression, displayValue, isError }: DisplayProps): JSX.Element {
+function Display({ state }: DisplayProps): JSX.Element {
+  const { expression, displayValue, isError } = state
   return (
     <div className={styles.display}>
       <div className={styles.expression}>{expression || '\u00A0'}</div>
