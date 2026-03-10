@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { ButtonConfig } from '../../../../types/calculator'
+import styles from './Calculator.module.css'
 import {
   initialState,
   inputDigit,
@@ -61,7 +62,7 @@ function Calculator(): JSX.Element {
   }
 
   return (
-    <div>
+    <div className={styles.card}>
       <Display state={state} />
       <ButtonGrid buttons={BUTTONS} onButtonClick={handleButtonClick} />
     </div>
