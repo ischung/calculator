@@ -64,21 +64,24 @@ jobs:
           fi
 
           for ISSUE_NUM in $ISSUE_NUMBERS; do
+            # organization 쿼리 시도 (실패해도 pipefail에 의해 중단되지 않도록 || true)
             ITEM_ID=$(
               gh api graphql \
                 -f query='query($owner:String!,$num:Int!){organization(login:$owner){projectV2(number:$num){items(first:200){nodes{id content{...on Issue{number}}}}}}}' \
-                -f owner="$OWNER" -F num="$PROJECT_NUMBER" 2>/dev/null | \
-              jq -r --argjson n "$ISSUE_NUM" \
-                '(.data.organization.projectV2.items.nodes // [])[] | select(.content.number == $n) | .id'
+                -f owner="$OWNER" -F num="$PROJECT_NUMBER" 2>/dev/null || true
             )
+            ITEM_ID=$(echo "$ITEM_ID" | jq -r --argjson n "$ISSUE_NUM" \
+              '(.data.organization.projectV2.items.nodes // [])[] | select(.content.number == $n) | .id' 2>/dev/null || true)
+
             if [ -z "$ITEM_ID" ]; then
+              # user 쿼리 시도 (개인 계정)
               ITEM_ID=$(
                 gh api graphql \
                   -f query='query($owner:String!,$num:Int!){user(login:$owner){projectV2(number:$num){items(first:200){nodes{id content{...on Issue{number}}}}}}}' \
-                  -f owner="$OWNER" -F num="$PROJECT_NUMBER" | \
-                jq -r --argjson n "$ISSUE_NUM" \
-                  '(.data.user.projectV2.items.nodes // [])[] | select(.content.number == $n) | .id'
+                  -f owner="$OWNER" -F num="$PROJECT_NUMBER" 2>/dev/null || true
               )
+              ITEM_ID=$(echo "$ITEM_ID" | jq -r --argjson n "$ISSUE_NUM" \
+                '(.data.user.projectV2.items.nodes // [])[] | select(.content.number == $n) | .id' 2>/dev/null || true)
             fi
 
             if [ -z "$ITEM_ID" ]; then
