@@ -1,0 +1,13 @@
+.card {
+  width: 360px;
+  background-color: var(--color-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--padding-card);
+  font-family:
+    'SF Pro Display',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+}
