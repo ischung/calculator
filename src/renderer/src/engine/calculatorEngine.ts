@@ -60,5 +60,125 @@ export function inputDecimal(state: CalculatorState): CalculatorState {
   }
 }
 
-// 이후 이슈(#5, #6)에서 구현될 함수들의 타입 시그니처 예약
+export function inputOperator(state: CalculatorState, operator: Operator): CalculatorState {
+  if (state.isError) return state
+
+  // 이미 연산자 대기 중: 마지막 연산자로 교체
+  if (state.waitingForSecond) {
+    return { ...state, operator }
+  }
+
+  const currentValue = parseFloat(state.displayValue)
+
+  // 결과 표시 후 연산자 입력: 결과값을 첫 번째 피연산자로 사용하며 계속 연산
+  if (state.firstOperand !== null && state.operator) {
+    const result = performCalculation(state.firstOperand, currentValue, state.operator)
+    if (result === null) {
+      return { ...state, isError: true, displayValue: 'Error', expression: '' }
+    }
+    return {
+      ...state,
+      displayValue: formatResult(result),
+      firstOperand: result,
+      operator,
+      waitingForSecond: true,
+      expression: `${formatResult(result)} ${operator}`
+    }
+  }
+
+  return {
+    ...state,
+    firstOperand: currentValue,
+    operator,
+    waitingForSecond: true,
+    expression: `${state.displayValue} ${operator}`
+  }
+}
+
+export function calculate(state: CalculatorState): CalculatorState {
+  if (state.isError) return state
+
+  const currentValue = parseFloat(state.displayValue)
+
+  // = 연속 입력: lastOperator + lastOperand로 재연산
+  if (state.firstOperand === null && state.lastOperator !== null && state.lastOperand !== null) {
+    const result = performCalculation(currentValue, state.lastOperand, state.lastOperator)
+    if (result === null) {
+      return { ...state, isError: true, displayValue: 'Error', expression: '' }
+    }
+    return {
+      ...state,
+      displayValue: formatResult(result),
+      expression: '',
+      firstOperand: null,
+      operator: null,
+      waitingForSecond: false
+    }
+  }
+
+  if (state.firstOperand === null || state.operator === null) return state
+
+  const secondOperand = state.waitingForSecond ? state.firstOperand : currentValue
+  const result = performCalculation(state.firstOperand, secondOperand, state.operator)
+
+  if (result === null) {
+    return { ...state, isError: true, displayValue: 'Error', expression: '' }
+  }
+
+  return {
+    ...state,
+    displayValue: formatResult(result),
+    expression: '',
+    firstOperand: null,
+    operator: null,
+    waitingForSecond: false,
+    lastOperator: state.operator,
+    lastOperand: secondOperand
+  }
+}
+
+export function clear(state: CalculatorState): CalculatorState {
+  if (
+    state.displayValue === '0' &&
+    state.firstOperand === null &&
+    state.operator === null &&
+    !state.waitingForSecond &&
+    !state.isError
+  ) {
+    return state
+  }
+  return { ...initialState }
+}
+
+export function backspace(state: CalculatorState): CalculatorState {
+  if (state.isError) return state
+
+  // 결과 표시 중이면 무시
+  if (state.lastOperator !== null && state.firstOperand === null) {
+    return state
+  }
+
+  if (state.displayValue.length <= 1) {
+    return { ...state, displayValue: '0' }
+  }
+
+  return {
+    ...state,
+    displayValue: state.displayValue.slice(0, -1)
+  }
+}
+
+function performCalculation(a: number, b: number, operator: Operator): number | null {
+  switch (operator) {
+    case '+': return a + b
+    case '-': return a - b
+    case '×': return a * b
+    case '÷': return b === 0 ? null : a / b
+  }
+}
+
+function formatResult(value: number): string {
+  return String(parseFloat(value.toPrecision(10)))
+}
+
 export type { Operator }
