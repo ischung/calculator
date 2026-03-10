@@ -37,18 +37,5 @@
     "typescript": "^5.4.2",
     "vite": "^5.1.6",
     "vitest": "^1.4.0"
-  },
-  "build": {
-    "appId": "com.calculator.app",
-    "productName": "Calculator",
-    "directories": {
-      "output": "dist"
-    },
-    "mac": {
-      "target": "dmg"
-    },
-    "win": {
-      "target": "nsis"
-    }
   }
 }
