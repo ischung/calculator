@@ -60,5 +60,38 @@ export function inputDecimal(state: CalculatorState): CalculatorState {
   }
 }
 
-// 이후 이슈(#5, #6)에서 구현될 함수들의 타입 시그니처 예약
+export function clear(state: CalculatorState): CalculatorState {
+  // 이미 초기 상태면 무시
+  if (
+    state.displayValue === '0' &&
+    state.firstOperand === null &&
+    state.operator === null &&
+    !state.waitingForSecond &&
+    !state.isError
+  ) {
+    return state
+  }
+
+  return { ...initialState }
+}
+
+export function backspace(state: CalculatorState): CalculatorState {
+  if (state.isError) return state
+
+  // 결과 표시 중(연산 완료 후 waitingForSecond가 false이고 lastOperator가 있는 상태)이면 무시
+  if (state.lastOperator !== null && state.firstOperand === null) {
+    return state
+  }
+
+  // 한 자리이거나 음수 한 자리('-5' 등)면 '0'으로
+  if (state.displayValue.length <= 1 || (state.displayValue.startsWith('-') && state.displayValue.length <= 2)) {
+    return { ...state, displayValue: '0' }
+  }
+
+  return {
+    ...state,
+    displayValue: state.displayValue.slice(0, -1)
+  }
+}
+
 export type { Operator }

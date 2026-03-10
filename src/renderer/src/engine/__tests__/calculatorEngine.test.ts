@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { initialState, inputDigit, inputDecimal } from '../calculatorEngine'
+import { initialState, inputDigit, inputDecimal, clear, backspace } from '../calculatorEngine'
 import type { CalculatorState } from '../../../../types/calculator'
 
 describe('initialState', () => {
@@ -108,5 +108,74 @@ describe('inputDecimal', () => {
     const original = { ...initialState }
     inputDecimal(initialState)
     expect(initialState.displayValue).toBe(original.displayValue)
+  })
+})
+
+describe('clear', () => {
+  it('clear() 호출 시 displayValue가 "0"인 초기 상태를 반환한다', () => {
+    const state = inputDigit(initialState, '5')
+    const result = clear(state)
+    expect(result.displayValue).toBe('0')
+    expect(result.firstOperand).toBeNull()
+    expect(result.operator).toBeNull()
+  })
+
+  it('초기 상태에서 clear() 호출 시 상태가 변경되지 않는다', () => {
+    const result = clear(initialState)
+    expect(result).toBe(initialState)
+  })
+
+  it('오류 상태에서 clear() 호출 시 정상 초기 상태로 복귀한다', () => {
+    const errorState: CalculatorState = { ...initialState, isError: true, displayValue: 'Error' }
+    const result = clear(errorState)
+    expect(result.isError).toBe(false)
+    expect(result.displayValue).toBe('0')
+  })
+
+  it('연산 도중 clear() 호출 시 완전히 초기화된다', () => {
+    let state = inputDigit(initialState, '9')
+    state = { ...state, firstOperand: 9, operator: '+', waitingForSecond: true }
+    const result = clear(state)
+    expect(result.firstOperand).toBeNull()
+    expect(result.operator).toBeNull()
+    expect(result.waitingForSecond).toBe(false)
+  })
+})
+
+describe('backspace', () => {
+  it('"123" → "12"로 줄어든다', () => {
+    const state: CalculatorState = { ...initialState, displayValue: '123' }
+    const result = backspace(state)
+    expect(result.displayValue).toBe('12')
+  })
+
+  it('한 자리 숫자에서 backspace 시 "0"이 된다', () => {
+    const state: CalculatorState = { ...initialState, displayValue: '5' }
+    const result = backspace(state)
+    expect(result.displayValue).toBe('0')
+  })
+
+  it('결과 표시 중 backspace 호출 시 상태가 변경되지 않는다', () => {
+    const resultState: CalculatorState = {
+      ...initialState,
+      displayValue: '8',
+      lastOperator: '+',
+      lastOperand: 3,
+      firstOperand: null
+    }
+    const result = backspace(resultState)
+    expect(result).toBe(resultState)
+  })
+
+  it('소수점 포함 숫자에서 backspace가 동작한다', () => {
+    const state: CalculatorState = { ...initialState, displayValue: '3.14' }
+    const result = backspace(state)
+    expect(result.displayValue).toBe('3.1')
+  })
+
+  it('오류 상태에서 backspace 호출 시 무시된다', () => {
+    const errorState: CalculatorState = { ...initialState, isError: true }
+    const result = backspace(errorState)
+    expect(result).toBe(errorState)
   })
 })
