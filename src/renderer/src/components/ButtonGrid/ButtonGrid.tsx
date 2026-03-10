@@ -1,5 +1,6 @@
-// Issue #10에서 완전 구현 예정
 import type { ButtonConfig } from '../../../../types/calculator'
+import Button from './Button'
+import styles from './ButtonGrid.module.css'
 
 interface ButtonGridProps {
   buttons: ButtonConfig[]
@@ -8,15 +9,9 @@ interface ButtonGridProps {
 
 function ButtonGrid({ buttons, onButtonClick }: ButtonGridProps): JSX.Element {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
-      {buttons.map((btn) => (
-        <button
-          key={btn.value}
-          onClick={() => onButtonClick(btn.value)}
-          style={{ padding: '16px', fontSize: '18px' }}
-        >
-          {btn.label}
-        </button>
+    <div className={styles.grid}>
+      {buttons.map((btn, idx) => (
+        <Button key={`${btn.value}-${idx}`} config={btn} onButtonClick={onButtonClick} />
       ))}
     </div>
   )
