@@ -1,0 +1,54 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gap-btn);
+  margin-top: var(--gap-btn);
+}
+
+.button {
+  height: 72px;
+  border: none;
+  border-radius: var(--radius-btn);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  box-shadow: var(--shadow-btn);
+  transition: var(--transition-btn);
+  background-color: var(--color-btn-number);
+}
+
+.button:active {
+  transform: scale(0.95);
+  box-shadow: none;
+}
+
+.number {
+  background-color: var(--color-btn-number);
+}
+
+.operator {
+  background-color: var(--color-btn-operator);
+}
+
+.equals {
+  background-color: var(--color-btn-equals);
+}
+
+.clear {
+  background-color: var(--color-btn-clear);
+}
+
+.backspace {
+  background-color: var(--color-btn-clear);
+}
+
+.decimal {
+  background-color: var(--color-btn-number);
+}
+
+/* 0 버튼: 가로 2칸 162px */
+.wide {
+  grid-column: span 2;
+  width: 162px;
+}
