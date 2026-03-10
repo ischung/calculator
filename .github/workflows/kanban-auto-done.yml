@@ -1,0 +1,14 @@
+name: Kanban — Move to Done on PR Merge
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  move-to-done:
+    if: github.event.pull_request.merged == true
+    uses: ./.github/workflows/_kanban-move.yml
+    with:
+      status: Done
+      pr_body: ${{ github.event.pull_request.body }}
+    secrets: inherit
