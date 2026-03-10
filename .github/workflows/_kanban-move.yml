@@ -43,7 +43,8 @@ jobs:
             exit 1
           fi
 
-          # inline fragment 로 Organization/User 모두 처리 ("unknown owner type" 방지)
+          # inline fragment 로 Organization/User 모두 처리
+          # RepositoryOwner 인터페이스에는 projectsV2 필드가 없으므로 inline fragment 필수
           if [ -n "$KANBAN_PROJECT_NUMBER" ]; then
             PROJECT_NUMBER="$KANBAN_PROJECT_NUMBER"
           else
